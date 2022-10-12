@@ -2,18 +2,19 @@ from components import Population
 import random as rnd
 from components.Schedules import Schedule
 from components import Lessons
+import itertools
 
 
 class GeneticAlgorithm:
     def evolve(self, population):
-        return self._mutate_population(self._crossover_population(population))
+        return self._mutate_population(population)
 
-    def __init__(self, inData, eliteSchedule, popSize, mutationRate, seletionSize):
+    def __init__(self, inData, eliteSchedule, popSize, mutationRate, selectionSize):
         self._data = inData
         self._NUMB_OF_ELITE_SCHEDULES = eliteSchedule
         self._POPULATION_SIZE = popSize
         self._MUTATION_RATE = mutationRate
-        self._ROULETTE_SELECTION_SIZE = seletionSize
+        self._ROULETTE_SELECTION_SIZE = selectionSize
 
     def _crossover_population(self, pop):
         crossover_pop = Population.Population(0, [])
@@ -42,15 +43,19 @@ class GeneticAlgorithm:
         return crossoverSchedule
 
     def _mutate_schedule(self, mutateSchedule):
-        for i in range(0, len(mutateSchedule.get_lessons())):
-            random1 = rnd.randrange(0, len(mutateSchedule.get_lessons()))
-            random2 = rnd.randrange(0, len(mutateSchedule.get_lessons()))
-            temp = Lessons.Lesson(0)
-            if self._MUTATION_RATE > rnd.random():
-                temp.set_lesson_teacher(mutateSchedule.get_lessons()[random1].get_lesson_teacher())
-                mutateSchedule.get_lessons()[random1].set_lesson_teacher(
-                    mutateSchedule.get_lessons()[random2].get_lesson_teacher())
-                mutateSchedule.get_lessons()[random2].set_lesson_teacher(temp.get_lesson_teacher())
+        lessons = mutateSchedule.get_lessons()
+        for i, j in itertools.combinations(lessons, 2):
+            if i.get_lesson_classroom() == j.get_lesson_classroom():
+                temp = Lessons.Lesson(0)
+                if self._MUTATION_RATE > rnd.random():
+                    temp.set_lesson_teacher(i.get_lesson_teacher())
+                    temp.set_lesson_subject(i.get_lesson_subject())
+
+                    i.set_lesson_teacher(j.get_lesson_teacher())
+                    i.set_lesson_subject(j.get_lesson_subject())
+
+                    j.set_lesson_teacher(temp.get_lesson_teacher())
+                    j.set_lesson_subject(temp.get_lesson_subject())
         return mutateSchedule
 
     def _select_roulette(self, pop):

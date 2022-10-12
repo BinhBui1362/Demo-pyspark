@@ -5,6 +5,7 @@ class Lesson:
         self._subject = None
         self._teacher = None
         self._timeslot = None
+        self._school_day = None
 
     def get_lesson_ID(self): return self._lessonID
 
@@ -24,4 +25,8 @@ class Lesson:
 
     def set_lesson_timeslot(self, timeslot): self._timeslot = timeslot
 
-    def __str__(self): return str(self._classroom) + "-" + str(self._teacher) + "-" + str(self._timeslot)
+    def set_lesson_school_day(self, school_day): self._school_day = school_day
+
+    def get_lesson_school_day(self): return self._school_day
+
+    def __str__(self): return str(self._lessonID)
